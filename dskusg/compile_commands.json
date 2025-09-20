@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-I../include",
+      "-o",
+      "dskusg",
+      "dskusg.c"
+    ],
+    "directory": "/home/asher/Coding/c/unix-tools/dskusg",
+    "file": "/home/asher/Coding/c/unix-tools/dskusg/dskusg.c",
+    "output": "/home/asher/Coding/c/unix-tools/dskusg/dskusg"
+  }
+]

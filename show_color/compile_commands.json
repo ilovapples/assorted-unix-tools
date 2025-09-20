@@ -1,0 +1,15 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-I../include",
+      "-o",
+      "main",
+      "main.c"
+    ],
+    "directory": "/home/asher/Coding/c/unix-tools/show_color",
+    "file": "/home/asher/Coding/c/unix-tools/show_color/main.c",
+    "output": "/home/asher/Coding/c/unix-tools/show_color/main"
+  }
+]
