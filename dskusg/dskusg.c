@@ -176,7 +176,7 @@ s32 main(s32 argc, char **argv)
 	struct statvfs file_stats;
 
 	if (statvfs(DEVICE_PATH, &file_stats) < 0)
-		error(1, "Failed to obtain file system statistics about the device '%s' (check for typos).\n", DEVICE_PATH); 
+		error(1, "Failed to obtain file system statistics for the device '%s' (check for typos).\n", DEVICE_PATH); 
 	
 	u64 total_space_bytes = file_stats.f_blocks * file_stats.f_frsize;
 	u64 free_space_bytes = file_stats.f_bfree * file_stats.f_frsize;
@@ -187,8 +187,8 @@ s32 main(s32 argc, char **argv)
 	IFDBG {
 		printf("Filesystem block size: %zu\n", file_stats.f_bsize);
 		printf("Filesystem fragment size: %zu\n", file_stats.f_frsize);
-		printf("Total blocks in '%s': %zu\n", DEVICE_PATH, file_stats.f_blocks);
-		printf("Number of free blocks: %zu\n", file_stats.f_bfree);
+		printf("Total blocks in '%s': %u\n", DEVICE_PATH, file_stats.f_blocks);
+		printf("Number of free blocks: %u\n", file_stats.f_bfree);
 		printf("runtime_flags = %#x\n", runtime_flags);
 	}
 
@@ -272,8 +272,8 @@ s32 main(s32 argc, char **argv)
 			break;
 		default:
 			printf("Total size of '%s': %s B\n", DEVICE_PATH, total_space_str_buf);
-			printf("Free space in '%s': %*" PRIu64 " B\n", DEVICE_PATH, total_space_str_len, free_space_bytes);
-			printf("Used space in '%s': %*" PRIu64 " B\n", DEVICE_PATH, total_space_str_len, used_space_bytes);
+			printf("Free space in '%s': %*" PRIu64 " B\n", DEVICE_PATH, (int)total_space_str_len, free_space_bytes);
+			printf("Used space in '%s': %*" PRIu64 " B\n", DEVICE_PATH, (int)total_space_str_len, used_space_bytes);
 			printf("Percent used: " PERCENT_FORMAT "%%\n", used_percent);
 			break;
 		}

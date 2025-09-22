@@ -46,7 +46,7 @@ s32 main(s32 argc, char **argv)
 		if (*c == '\x1b')
 			while (!isalpha(*c++))
 				;
-		if (!(isspace(*c++) || iscntrl(c)))
+		if (!(isspace(*c++) || iscntrl(*c)))
 			putc(*c, stdout);
 	}
 

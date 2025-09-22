@@ -2,6 +2,7 @@
 #define INT_TYPES_H
 
 #include <inttypes.h>
+#include <stddef.h>
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -11,5 +12,10 @@ typedef int8_t s8;
 typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
+
+typedef struct strbuf {
+	char *s;
+	size_t l;
+} strbuf;
 
 #endif /* INT_TYPES_H */

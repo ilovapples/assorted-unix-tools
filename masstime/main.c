@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
-#include <stdint.h>
+#include <inttypes.h>
 #include <stdio.h>
 
 #define freep(p) (free(p), (p)=NULL)
@@ -129,7 +129,7 @@ int32_t main(int32_t argc, char **argv)
 
 	flat_cmd = flatten_str_arr(CMD_START);
 
-	printf("executing command '%s' %lu times...\n", flat_cmd, count);
+	printf("executing command '%s' %" PRIu64 " times...\n", flat_cmd, count);
 
 	times = calloc(count, sizeof(double));
 

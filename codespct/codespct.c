@@ -4,40 +4,32 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "shared_stuff.h"
+#include "types.h"
+
 #define BUF_LEN 512
 
 int32_t main(int32_t argc, char **argv)
 {
+	/* same interface but different file (path vs stdin) hmm*/
+	FILE *fp = stdin;
 	if (argc > 1)
 	{
-		FILE *fptr = fopen(argv[1], "rb");
-		if (!fptr) {
-			fprintf(stderr, "failed to open '%s'\n", argv[1]);
-			return 2;
-		}
-
-		char buf[BUF_LEN+1] = {0};
-		fread(buf, sizeof(char), BUF_LEN, fptr);
-		
-		size_t buf_strlen = strlen(buf);
-		char *cp = buf;
-		while (buf_strlen--) {
-			if (iscntrl(*cp))
-				printf("<%02x>", *cp);
-			else
-				printf("%c", *cp);
-			cp++;
-		}
-	} else
-	{
-		char c;
-		while ((c = fgetc(stdin)) != EOF)
+		fp = fopen(argv[1], "rb");
+		if (!fp)
 		{
-			if (iscntrl(c))
-				printf("<%02x>", c);
-			else
-				printf("%c", c);
+			fprintf(stderr, "%s: failed to open '%s'\n", argv[0], argv[1]);
+			return 1;
 		}
+	}
+
+	int32_t c;
+	while ((c = fgetc(fp)) != EOF)
+	{
+		if (iscntrl(c) || c == '<' || c == '>')
+			printf("<%02x>", c);
+		else
+			fputc(c, stdout);
 	}
 	
 	return 0;

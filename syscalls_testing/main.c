@@ -4,7 +4,7 @@
 #include "term_set.h"
 #include "sysio.h"
 
-int32_t main()
+int32_t main(void)
 {
 	set_raw_mode();
 	atexit(restore_term);

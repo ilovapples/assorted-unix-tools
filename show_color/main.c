@@ -34,7 +34,7 @@ s32 main(s32 argc, char **argv)
 	
 	char to_lower_buf[6+1] = {0};
 	char *c1 = to_lower_buf, *c2 = color_buf;
-	while (*c1++ = tolower(*c2++))
+	while ((*c1++ = tolower(*c2++)))
 		;
 
 	u8 rv = (xdig2num(to_lower_buf[0]) << 4) + xdig2num(to_lower_buf[1]);
