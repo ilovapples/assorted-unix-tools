@@ -129,7 +129,7 @@ int32_t main(int32_t argc, char **argv)
 
 	flat_cmd = flatten_str_arr(CMD_START);
 
-	printf("executing command '%s' %" PRIu64 " times...\n", flat_cmd, count);
+	printf("executing command \"%s\" %" PRIu64 " times...\n", flat_cmd, count);
 
 	times = calloc(count, sizeof(double));
 

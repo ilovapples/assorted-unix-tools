@@ -1,5 +1,5 @@
-#ifndef INT_TYPES_H
-#define INT_TYPES_H
+#ifndef AUT__TYPES_H
+#define AUT__TYPES_H
 
 #include <inttypes.h>
 #include <stddef.h>
@@ -18,4 +18,4 @@ typedef struct strbuf {
 	size_t l;
 } strbuf;
 
-#endif /* INT_TYPES_H */
+#endif /* AUT__TYPES_H */
