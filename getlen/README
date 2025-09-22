@@ -1,0 +1,4 @@
+usage: getlen [arg]
+
+If arg is present, print the byte count of arg (including special characters, not including null terminator), without a newline.
+Otherwise, print the byte count of the input passed through stdin (including special characters, not including EOF), without a newline.

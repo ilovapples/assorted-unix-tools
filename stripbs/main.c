@@ -21,7 +21,7 @@ s32 main(s32 argc, char **argv)
 
 	if (argc < 2 || argv[1][0] == '-')
 	{
-		sc32 c;
+		int32_t c;
 		while ((c = fgetc(stdin)) != EOF)
 		{
 			if (c == '\x1b')
