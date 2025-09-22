@@ -11,11 +11,11 @@ uint8_t code = 0;
 void print_usage(void)
 {
 	fprintf(stderr,
-			"usage: %s [options] <char>\n\n"
+			"usage: %s [options] <code>\n\n"
 			
 			"--help, -h                            Display this help message\n"
-			"--code=CODE                           Encode/decode with CODE (one byte) (default is 0x0c)\n"
-			"meaning of <char>: will be interpreted as ASCII and used as the code if present.\n"
+			"--char=CODE                           Encode/decode with CODE considered as ASCII (default is 0x0c)\n"
+			"meaning of <code>: if present, is a one byte value that will be used for encoding/decoding\n"
 			, PROG_NAME);
 	exit(1);
 }
@@ -29,9 +29,9 @@ void arg_parse(int32_t argc, char **argv)
 		{
 			if (strcmp(argv[arg_n]+2, "help") == 0)
 				print_usage();
-			else if (strncmp(argv[arg_n]+2, "code=", 5) == 0)
+			else if (strncmp(argv[arg_n]+2, "char=", 5) == 0)
 			{
-				code = (uint8_t)strtoul(argv[arg_n]+2+5, NULL, 0);
+				code = (uint8_t)argv[arg_n][2+5];
 				code_was_set = true;
 			} else
 			{
@@ -58,7 +58,7 @@ void arg_parse(int32_t argc, char **argv)
 			}
 		} else if (!code_was_set)
 		{
-			code = (uint8_t)argv[arg_n][0];
+			code = (uint8_t)strtoul(argv[arg_n], NULL, 0);
 			code_was_set = true;
 		} else
 		{

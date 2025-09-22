@@ -16,31 +16,29 @@ void error(s32 err_code, const char *fmt, ...)
 
 
 #define INIT_BUF_SIZE 256
-strbuf read_string_from_stream(FILE *stream)
+memblck read_string_from_stream(FILE *stream)
 {
 	size_t buf_size = INIT_BUF_SIZE;
-	strbuf ret = { NULL, 0 };
-	ret.s = calloc(buf_size, sizeof(char));
-	if (ret.s == NULL)
-		return (strbuf) { NULL, 0 };
+	memblck ret = { NULL, 0 };
+	ret.m = malloc(buf_size);
+	if (ret.m == NULL)
+		return (memblck) { NULL, 0 };
 
 	size_t n_read;
-	while ((n_read = fread(ret.s + ret.l, 1, buf_size - ret.l - 1, stream)) > 0)
+	while ((n_read = fread(ret.m + ret.l, 1, buf_size - ret.l - 1, stream)) > 0)
 	{
 		ret.l += n_read;
 		if (ret.l >= buf_size - 1)
 		{
-			char *temp_buf = realloc(ret.s, buf_size *= 2);
+			void *temp_buf = realloc(ret.m, buf_size *= 2);
 			if (temp_buf == NULL)
 			{
-				free(ret.s);
-				return (strbuf) { NULL, 0 };
+				free(ret.m);
+				return (memblck) { NULL, 0 };
 			}
-			ret.s = temp_buf;
+			ret.m = temp_buf;
 		}
 	}
-
-	ret.s[ret.l++] = '\0';
 
 	return ret;
 }

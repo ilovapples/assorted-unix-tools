@@ -13,9 +13,9 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
-typedef struct strbuf {
-	char *s;
+typedef struct memblck{
+	void *m;
 	size_t l;
-} strbuf;
+} memblck;
 
 #endif /* AUT__TYPES_H */

@@ -8,6 +8,6 @@
 #include "types.h"
 
 void error(s32 err_code, const char *fmt, ...);
-strbuf read_string_from_stream(FILE *stream);
+memblck read_data_from_stream(FILE *stream);
 
 #endif /* AUT__SHARED_STUFF_H */

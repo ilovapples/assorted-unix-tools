@@ -19,7 +19,7 @@ EXES := $(foreach d,$(DIRS),build/$(notdir $(d)))
 .PHONY: all clean clean_exported export
 all: $(LIB)/shared_stuff.o build $(EXES)
 
-$(LIB)/shared_stuff.o: $(LIB_SRC)/shared_stuff.c $(INCLUDE)/shared_stuff.h Makefile
+$(LIB)/shared_stuff.o: $(LIB) $(LIB_SRC)/shared_stuff.c $(INCLUDE)/shared_stuff.h Makefile
 	gcc -o $(LIB)/shared_stuff.o -c $(LIB_SRC)/shared_stuff.c -I$(INCLUDE)
 
 
@@ -55,3 +55,5 @@ clean_exported: clean
 
 build:
 	mkdir build
+$(LIB):
+	mkdir $(LIB)
