@@ -81,7 +81,7 @@ void arg_parse(s32 argc, char **argv)
 				while (*(++cur_char) && !will_terminate) {
 					switch (*cur_char) {
 					case '-':
-						error(-5280, "'-' characters are not allowed in short options past the first\n");
+						error(-5280, "%s: argument error: '-' characters are not allowed in short options\n", argv[0]);
 						will_terminate = true;
 						break;
 					case 'd':
@@ -95,12 +95,12 @@ void arg_parse(s32 argc, char **argv)
 						break;
 					case 'U':
 						if (FLAG_SET(NO_UNIT))
-							error(-5280, "-U and -u (--unit and --no-unit) are mutually exclusive options.");
+							error(-5280, "%s: argument error: -U and -u (--unit and --no-unit) are mutually exclusive options.\n", argv[0]);
 						SET_FLAG(ONLY_UNIT);
 						break;
 					case 'u':
 						if (FLAG_SET(ONLY_UNIT))
-							error(-5280, "-u and -U (--no-unit and --unit) are mutually exclusive options.");
+							error(-5280, "%s: argument error: -u and -U (--no-unit and --unit) are mutually exclusive options.\n", argv[0]);
 						SET_FLAG(NO_UNIT);
 						break;
 					case 'r':
@@ -123,7 +123,7 @@ void arg_parse(s32 argc, char **argv)
 						}
 						print_usage_msg();
 					default:
-						error(-5280, "unknown option \"-%c\"\n", *cur_char);
+						error(-5280, "%s: argument error: unknown option \"-%c\"\n", argv[0], *cur_char);
 						print_usage_msg();
 					}
 				}
@@ -176,7 +176,9 @@ s32 main(s32 argc, char **argv)
 	struct statvfs file_stats;
 
 	if (statvfs(DEVICE_PATH, &file_stats) < 0)
-		error(1, "Failed to obtain file system statistics for the device '%s' (check for typos).\n", DEVICE_PATH); 
+		error(1, "%s: Failed to obtain file system statistics for "
+				"the device '%s' (check for typos).\n",
+				argv[0], DEVICE_PATH); 
 	
 	u64 total_space_bytes = file_stats.f_blocks * file_stats.f_frsize;
 	u64 free_space_bytes = file_stats.f_bfree * file_stats.f_frsize;
