@@ -10,7 +10,7 @@ SRC_FILES := $(wildcard */*.c)
 
 DIRS := $(sort $(dir $(SRC_FILES)))
 DIRS := $(patsubst %/,%,$(DIRS))
-DIRS := $(filter-out $(LIB_SRC),$(DIRS))
+DIRS := $(filter-out $(LIB_SRC) %nope,$(DIRS))
 
 OBJS := $(foreach d,$(DIRS),$(patsubst $(d)/%.c,$(d)/%.o,$(wildcard $(d)/*.c)))
 

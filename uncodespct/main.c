@@ -25,8 +25,13 @@ int32_t main(int32_t argc, char **argv)
 	{
 		if (c == '<')
 		{
-			while ((c = fgetc(fp)) != '>' && c != EOF)
+			while ((c = fgetc(fp)) != '>' && c != EOF && spec_char_top - spec_char_buf < 3)
 				*spec_char_top++ = (char)c;
+			if (spec_char_top - spec_char_buf == 3)
+			{
+				fprintf(stderr, "%s: invalid `codespct` string\n", argv[0]);
+				return 2;
+			}
 			spec_char_top = spec_char_buf;
 			fputc(strtol(spec_char_buf, NULL, 16), stdout);
 		} else
