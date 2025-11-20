@@ -47,12 +47,12 @@ int main(int argc, char **argv)
             const int sc = fgetc(sfp);
             const int ac = fgetc(afp);
             if (sc == EOF) {
-                  printf("The source '%s' matches with the check file '%s' up to the end of"
+                  printf("FULL MATCH. The source '%s' matches with the check file '%s' up to the end of"
                               " the source.\n",
                               (filename) ? filename : "<stdin>", against);
                   break;
             } else if (ac == EOF) {
-                  printf("The source '%s' matches with the check file '%s' up to the end of"
+                  printf("SHORT CHECK FILE. The source '%s' matches with the check file '%s' up to the end of"
                               " the check file.\n",
                               (filename) ? filename : "<stdin>", against);
                   break;
@@ -61,7 +61,7 @@ int main(int argc, char **argv)
             if (sc != ac) {
                   char src_char_buf[5];
                   escape_char(src_char_buf, sc);
-                  printf("%zu characters matched before non-match '%s' != '%s' found.\n",
+                  printf("INCOMPLETE MATCH.%zu characters matched before non-match '%s' != '%s' found.\n",
                               n_match, src_char_buf, escape_char(NULL, ac));
                   break;
             }

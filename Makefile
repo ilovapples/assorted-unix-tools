@@ -42,7 +42,7 @@ BINDIR := $(INSTALL_PREFIX)/bin
 EXPORT_EXES := $(patsubst build/%,$(BINDIR)/%,$(EXES))
 
 $(EXPORT_EXES): $(BINDIR)/%: build/%
-	cp $< $@
+	cp -i $< $@
 
 export: $(LIB)/shared_stuff.o $(EXPORT_EXES)
 
