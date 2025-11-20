@@ -2,10 +2,9 @@ INCLUDE := include
 LIB := lib
 LIB_SRC := lib_src
 
-MCFLAGS := -Wall -Wextra -Wpedantic -I$(INCLUDE)
-MLDFLAGS := -g
+CFLAGS := -Wall -Wextra -Wpedantic -I$(INCLUDE) $(EXTRA_CFLAGS)
+LDFLAGS := $(EXTRA_LDFLAGS)
 CC := gcc
-
 SRC_FILES := $(wildcard */*.c)
 
 DIRS := $(sort $(dir $(SRC_FILES)))
@@ -28,13 +27,13 @@ $(LIB)/shared_stuff.o: $(LIB) $(LIB_SRC)/shared_stuff.c $(INCLUDE)/shared_stuff.
 # compile object files
 # depends on respective source file and a header with the same name (if it exists)
 $(OBJS): %.o: %.c $(wildcard $(dir $@)/*.h) Makefile
-	$(CC) $(MCFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 #
 # link executables
 # depends on all respective object files and the lib/*.o object files
 .SECONDEXPANSION:
 $(EXES): $$(patsubst %.c,%.o,$$(wildcard $$(notdir $$@)/*.c)) $$(wildcard $$(LIB)/*.o)
-	$(CC) $(MLDFLAGS) -o $@ $(filter-out $(LIB)/%.o,$^) $(LIB)/*.o
+	$(CC) $(LDFLAGS) -o $@ $(filter-out $(LIB)/%.o,$^) $(LIB)/*.o
 #
 
 # EXPORT RULE

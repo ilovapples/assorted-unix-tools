@@ -3,8 +3,7 @@
 
 int32_t main(int32_t argc, char **argv)
 {
-	if (argc < 2)
-	{
+	if (argc < 2) {
 		fprintf(stderr, "usage: %s <name>\n", argv[0]);
 		return 1;
 	}
