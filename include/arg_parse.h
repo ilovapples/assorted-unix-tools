@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #include "bitset.h"
-#include "../cvi/dvec/dvec.h"
+#include "cvi/dvec/dvec.h"
 
 #ifdef __cplusplus
 #define crestrict

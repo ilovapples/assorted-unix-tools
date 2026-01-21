@@ -1,0 +1,3 @@
+[submodule "include/cvi"]
+	path = include/cvi
+	url = https://codeberg.org/ilovapples/cvi

@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "bitset.h"
-#include "../cvi/dvec/dvec.h"
+#include "cvi/dvec/dvec.h"
 
 struct arg_parser ap_create(int argc, char **argv)
 {
