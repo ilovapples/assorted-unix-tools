@@ -56,8 +56,8 @@ export: $(LIB)/$(SHAREDSTUFF_LIB_A) $(EXPORT_EXES)
 
 # OTHER RULES
 clean:
-	rm -f $(patsubst lib/%,,$(wildcard */*.o)) build/*
-clean_exported: clean
+	rm -f $(filter-out lib/%,$(wildcard */*.o)) build/*
+clean_exported:
 	rm -f $(EXPORT_EXES)
 clean_libs: $(LIB)
 	rm -f $(LIB)/*.o $(LIB)/$(SHAREDSTUFF_LIB_A)
