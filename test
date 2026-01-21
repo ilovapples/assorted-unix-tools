@@ -1,1 +1,0 @@
-git commit -m "flip-flopped char and code in xor-enc, changed read_string_from_stream to read_data_from_stream (returns memblck)"

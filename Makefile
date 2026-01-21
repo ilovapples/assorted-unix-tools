@@ -2,9 +2,13 @@ INCLUDE := include
 LIB := lib
 LIB_SRC := lib_src
 
+SHAREDSTUFF_LIB := shared_stuff
+SHAREDSTUFF_LIB_A := lib$(SHAREDSTUFF_LIB).a
+
 CFLAGS := -Wall -Wextra -Wpedantic -I$(INCLUDE) $(EXTRA_CFLAGS)
-LDFLAGS := $(EXTRA_LDFLAGS)
-CC := gcc
+LDFLAGS := $(EXTRA_LDFLAGS) -L$(LIB) -l$(SHAREDSTUFF_LIB)
+CC := cc
+AR := ar
 SRC_FILES := $(wildcard */*.c)
 
 DIRS := $(sort $(dir $(SRC_FILES)))
@@ -15,11 +19,14 @@ OBJS := $(foreach d,$(DIRS),$(patsubst $(d)/%.c,$(d)/%.o,$(wildcard $(d)/*.c)))
 
 EXES := $(foreach d,$(DIRS),build/$(notdir $(d)))
 
-.PHONY: all clean clean_exported export
-all: $(LIB)/shared_stuff.o build $(EXES)
+.PHONY: all clean clean_exported clean_libs clean_all export
+all: $(LIB) $(LIB)/$(SHAREDSTUFF_LIB_A) build $(EXES)
 
-$(LIB)/shared_stuff.o: $(LIB) $(LIB_SRC)/shared_stuff.c $(INCLUDE)/shared_stuff.h Makefile
-	gcc -o $(LIB)/shared_stuff.o -c $(LIB_SRC)/shared_stuff.c -I$(INCLUDE)
+$(LIB)/%.o: $(LIB_SRC)/%.c $(wildcard $(INCLUDE)/*.h) $(LIB) Makefile
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+$(LIB)/$(SHAREDSTUFF_LIB_A): $(patsubst $(LIB_SRC)/%.c,$(LIB)/%.o,$(wildcard $(LIB_SRC)/*.c)) $(LIB) $(wildcard $(INCLUDE)/*.h) Makefile
+	$(AR) rcs $(LIB)/$(SHAREDSTUFF_LIB_A) $(filter %.o,$^)
 
 
 # COMPILATION + LINKING PHASE
@@ -32,8 +39,8 @@ $(OBJS): %.o: %.c $(wildcard $(dir $@)/*.h) Makefile
 # link executables
 # depends on all respective object files and the lib/*.o object files
 .SECONDEXPANSION:
-$(EXES): $$(patsubst %.c,%.o,$$(wildcard $$(notdir $$@)/*.c)) $$(wildcard $$(LIB)/*.o)
-	$(CC) $(LDFLAGS) -o $@ $(filter-out $(LIB)/%.o,$^) $(LIB)/*.o
+$(EXES): $$(patsubst %.c,%.o,$$(wildcard $$(notdir $$@)/*.c)) $$(LIB)/$$(SHAREDSTUFF_LIB_A)
+	$(CC) $(LDFLAGS) -o $@ $<
 #
 
 # EXPORT RULE
@@ -44,15 +51,18 @@ EXPORT_EXES := $(patsubst build/%,$(BINDIR)/%,$(EXES))
 $(EXPORT_EXES): $(BINDIR)/%: build/%
 	cp -i $< $@
 
-export: $(LIB)/shared_stuff.o $(EXPORT_EXES)
+export: $(LIB)/$(SHAREDSTUFF_LIB_A) $(EXPORT_EXES)
 
 # OTHER RULES
 clean:
-	rm -f */*.o build/*
+	rm -f $(patsubst lib/%,,$(wildcard */*.o)) build/*
 clean_exported: clean
 	rm -f $(EXPORT_EXES)
+clean_libs: $(LIB)
+	rm -f $(LIB)/*.o $(LIB)/$(SHAREDSTUFF_LIB_A)
+clean_all: clean clean_exported clean_libs
 
 build:
-	mkdir build
+	mkdir -p build
 $(LIB):
-	mkdir $(LIB)
+	mkdir -p $(LIB)
