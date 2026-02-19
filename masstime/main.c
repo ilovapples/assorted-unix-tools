@@ -9,7 +9,7 @@
 
 #define freep(p) (free(p), (p)=NULL)
 
-const char *PROG_NAME = NULL;
+const char *PROGRAM_NAME = NULL;
 char **CMD_START = NULL;
 
 uint64_t count = 10;
@@ -31,13 +31,13 @@ void print_usage(void)
 	err_print(1,
 			"usage: %s [options] -- <cmd_with_args>\n\n"
 			
-			"--count=NUM, -CNUM		Execute the given command NUM times (default is 10)\n", PROG_NAME);
+			"--count=NUM, -CNUM		Execute the given command NUM times (default is 10)\n", PROGRAM_NAME);
 }
 
 void arg_parse(int32_t argc, char **argv)
 {
 	int32_t arg_n = 0;
-	PROG_NAME = argv[arg_n++];
+	PROGRAM_NAME = argv[arg_n++];
 	for (; arg_n < argc; ++arg_n)
 	{
 		if (strcmp(argv[arg_n], "--") == 0)

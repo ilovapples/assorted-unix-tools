@@ -4,7 +4,6 @@ LIB_SRC := lib_src
 
 SHAREDSTUFF_LIB := shared_stuff
 SHAREDSTUFF_LIB_A := lib$(SHAREDSTUFF_LIB).a
-
 CFLAGS := -Wall -Wextra -Wpedantic -I$(INCLUDE) $(EXTRA_CFLAGS)
 LDFLAGS := $(EXTRA_LDFLAGS) -L$(LIB) -l$(SHAREDSTUFF_LIB)
 CC := cc
@@ -19,7 +18,7 @@ OBJS := $(foreach d,$(DIRS),$(patsubst $(d)/%.c,$(d)/%.o,$(wildcard $(d)/*.c)))
 
 EXES := $(foreach d,$(DIRS),build/$(notdir $(d)))
 
-.PHONY: all clean clean_exported clean_libs clean_all export
+.PHONY: all clean clean_installed clean_libs clean_all install
 all: build/SUBMODULES_INITED $(LIB) $(LIB)/$(SHAREDSTUFF_LIB_A) build $(EXES)
 
 $(LIB)/%.o: $(LIB_SRC)/%.c $(wildcard $(INCLUDE)/*.h) Makefile | $(LIB) build/SUBMODULES_INITED
@@ -35,7 +34,7 @@ $(LIB)/$(SHAREDSTUFF_LIB_A): $(patsubst $(LIB_SRC)/%.c,$(LIB)/%.o,$(wildcard $(L
 # depends on respective source file and a header with the same name (if it exists)
 .SECONDEXPANSION:
 $(OBJS): %.o: %.c $$(wildcard $$(dir $$@)/*.h) Makefile | build/SUBMODULES_INITED
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $< -DAPPLE_AUT_BINDIR='"$(TOOL_BINDIR)"'
 #
 # link executables
 # depends on all respective object files and the lib/*.o object files
@@ -44,24 +43,29 @@ $(EXES): $$(patsubst %.c,%.o,$$(wildcard $$(notdir $$@)/*.c)) $$(LIB)/$$(SHAREDS
 	$(CC) $(LDFLAGS) -o $@ $<
 #
 
-# EXPORT RULE
+# INSTALL RULE
 INSTALL_PREFIX := $(HOME)/.local
-BINDIR := $(INSTALL_PREFIX)/bin
-EXPORT_EXES := $(patsubst build/%,$(BINDIR)/%,$(EXES))
+GENERAL_BINDIR := $(INSTALL_PREFIX)/bin
+TOOL_BINDIR = $(GENERAL_BINDIR)/apple-aut-bin
+APPLE_AUT_TOOL_BIN := $(GENERAL_BINDIR)/apple-aut
+INSTALL_EXES := $(patsubst build/%,$(TOOL_BINDIR)/%,$(EXES))
 
-$(EXPORT_EXES): $(BINDIR)/%: build/%
-	cp -i $< $@
+$(APPLE_AUT_TOOL_BIN): build/apple-aut
+	cp -i build/apple-aut $(APPLE_AUT_TOOL_BIN)
 
-export: $(LIB)/$(SHAREDSTUFF_LIB_A) $(EXPORT_EXES)
+$(INSTALL_EXES): $(TOOL_BINDIR)/%: build/% $(TOOL_BINDIR)
+	cp $< $@
+	
+install: $(TOOL_BINDIR) $(LIB)/$(SHAREDSTUFF_LIB_A) $(APPLE_AUT_TOOL_BIN) $(INSTALL_EXES)
 
 # OTHER RULES
 clean:
 	rm -f $(filter-out lib/%,$(wildcard */*.o)) build/*
-clean_exported:
-	rm -f $(EXPORT_EXES)
+clean_installed:
+	rm -f $(INSTALL_EXES) $(APPLE_AUT_TOOL_BIN)
 clean_libs: $(LIB)
 	rm -f $(LIB)/*.o $(LIB)/$(SHAREDSTUFF_LIB_A)
-clean_all: clean clean_exported clean_libs
+clean_all: clean clean_installed clean_libs
 	git submodule deinit --all -f
 	rm -f build/SUBMODULES_INITED
 
@@ -69,6 +73,8 @@ build:
 	mkdir -p build
 $(LIB):
 	mkdir -p $(LIB)
+$(TOOL_BINDIR):
+	mkdir -p $(TOOL_BINDIR)
 
 build/SUBMODULES_INITED: | build
 	git submodule update --init

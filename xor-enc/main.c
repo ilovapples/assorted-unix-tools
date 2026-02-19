@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-char *PROG_NAME = NULL;
+char *PROGRAM_NAME = NULL;
 bool code_was_set = false;
 uint8_t code = 0;
 
@@ -16,13 +16,13 @@ void print_usage(void)
 			"--help, -h                            Display this help message\n"
 			"--char=CODE                           Encode/decode with CODE considered as ASCII (default is 0x0c)\n"
 			"meaning of <code>: if present, is a one byte value that will be used for encoding/decoding\n"
-			, PROG_NAME);
+			, PROGRAM_NAME);
 	exit(1);
 }
 
 void arg_parse(int32_t argc, char **argv)
 {
-	PROG_NAME = argv[0];
+	PROGRAM_NAME = argv[0];
 	for (int32_t arg_n = 1; arg_n < argc; ++arg_n)
 	{
 		if (strncmp(argv[arg_n], "--", 2) == 0)
@@ -36,7 +36,7 @@ void arg_parse(int32_t argc, char **argv)
 			} else
 			{
 				fprintf(stderr, "%s: argument error: unknown argument '%s'\n",
-					PROG_NAME, argv[arg_n]);
+					PROGRAM_NAME, argv[arg_n]);
 				exit(2);
 			}
 		} else if (argv[arg_n][0] == '-')
@@ -50,7 +50,7 @@ void arg_parse(int32_t argc, char **argv)
 					break;
 				default:
 					fprintf(stderr, "%s: argument error: unknown argument '-%c'\n",
-						PROG_NAME, *c);
+						PROGRAM_NAME, *c);
 					exit(2);
 					break;
 				}
@@ -62,7 +62,7 @@ void arg_parse(int32_t argc, char **argv)
 			code_was_set = true;
 		} else
 		{
-			fprintf(stderr, "%s: argument error: illegal argument '%s'\n", PROG_NAME, argv[arg_n]);
+			fprintf(stderr, "%s: argument error: illegal argument '%s'\n", PROGRAM_NAME, argv[arg_n]);
 			exit(2);
 		}
 	}
