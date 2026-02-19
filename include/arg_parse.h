@@ -58,11 +58,21 @@ struct arg_parser {
 
 struct arg_parser ap_create(int argc, char **argv);
 void ap_destroy(struct arg_parser *ap);
+
+/* The `type_str` parameter is used purely for documentation purposes, unless
+ * `strcmp(type_str, "bool") == 0`, which indicates that the parser should not
+ * look for another argument after the boolean option.
+ */
 const char *ap_long_option(
 		struct arg_parser *ap,
 		const char *name,
 		const char *desc,
 		const char *type_str);
+
+/* The `type_str` parameter is used purely for documentation purposes, unless
+ * `strcmp(type_str, "bool") == 0`, which indicates that the parser should not
+ * look for another argument after the boolean option.
+ */
 const char *ap_short_option(
 		struct arg_parser *ap,
 		char letter,
@@ -70,6 +80,10 @@ const char *ap_short_option(
 		const char *desc,
 		const char *type_str);
 
+/* The `type_str` parameter is used purely for documentation purposes, unless
+ * `strcmp(type_str, "bool") == 0`, which indicates that the parser should not
+ * look for another argument after the boolean option.
+ */
 const char *ap_short_option(
 		struct arg_parser *ap,
 		char letter,
@@ -77,6 +91,10 @@ const char *ap_short_option(
 		const char *desc,
 		const char *type_str);
 
+/* The `type_str` parameter is used purely for documentation purposes, unless
+ * `strcmp(type_str, "bool") == 0`, which indicates that the parser should not
+ * look for another argument after the boolean option.
+ */
 const char *ap_long_short_option(
 		struct arg_parser *ap,
 		const char *long_name,
@@ -84,6 +102,10 @@ const char *ap_long_short_option(
 		const char *desc,
 		const char *type_str);
 
+/* The `type_str` parameter is used purely for documentation purposes, unless
+ * `strcmp(type_str, "bool") == 0`, which indicates that the parser should not
+ * look for another argument after the boolean option.
+ */
 const char *ap_positional_option(
 		struct arg_parser *ap,
 		const char *name,
