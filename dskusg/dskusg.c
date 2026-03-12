@@ -189,8 +189,8 @@ s32 main(s32 argc, char **argv)
 	IFDBG {
 		printf("Filesystem block size: %zu\n", file_stats.f_bsize);
 		printf("Filesystem fragment size: %zu\n", file_stats.f_frsize);
-		printf("Total blocks in '%s': %u\n", DEVICE_PATH, file_stats.f_blocks);
-		printf("Number of free blocks: %u\n", file_stats.f_bfree);
+		printf("Total blocks in '%s': %lu\n", DEVICE_PATH, file_stats.f_blocks);
+		printf("Number of free blocks: %lu\n", file_stats.f_bfree);
 		printf("runtime_flags = %#x\n", runtime_flags);
 	}
 

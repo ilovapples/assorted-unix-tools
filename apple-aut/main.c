@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
+#if __has_include(<sys/wait.h>)
+    #include <sys/wait.h>
+#endif
 
 char const *PROGRAM_NAME;
 
