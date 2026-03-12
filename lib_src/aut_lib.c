@@ -38,3 +38,29 @@ char *expand_bindir_path(size_t buf_size, char buffer[static buf_size], char con
     
     return buffer + end;
 }
+
+void autlib_print_progress_bar_ex(
+			uint64_t completed,
+			uint64_t total,
+			size_t bar_len,
+			char bar_left_delimiter,
+			char bar_right_delimiter,
+			char filled,
+			char unfilled,
+			FILE *fp)
+{
+		fputc(bar_left_delimiter, fp);
+		const size_t filled_progress_len = (double)(bar_len*completed) / total + 1;
+
+		for (size_t p = 0; p < filled_progress_len; ++p) {
+			fputc(filled, fp);
+		}
+		for (size_t p = 0; p < (bar_len - filled_progress_len); ++p) {
+			fputc(unfilled, fp);
+		}
+		fputc(bar_right_delimiter, fp);
+}
+void autlib_print_progress_bar(uint64_t completed, uint64_t total, size_t bar_len, FILE *fp)
+{
+	autlib_print_progress_bar_ex(completed, total, bar_len, '[', ']', '=', ' ', fp);
+}
