@@ -4,9 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "shared_stuff.h"
-#include "types.h"
-
 #define BUF_LEN 512
 
 int32_t main(int32_t argc, char **argv)

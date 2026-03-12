@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "shared_stuff.h"
-#include "types.h"
+#include "autlib/shared_stuff.h"
+#include "autlib/types.h"
 
 void error(s32 err_code, const char *fmt, ...)
 {

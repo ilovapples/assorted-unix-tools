@@ -1,4 +1,4 @@
-#include "arg_parse.h"
+#include "autlib/arg_parse.h"
 
 #include <ctype.h>
 #include <stddef.h>
@@ -8,8 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bitset.h"
-#include "cvi/dvec/dvec.h"
+#include "autlib/bitset.h"
+#include "autlib/dvec.h"
 
 struct arg_parser ap_create(int argc, char **argv)
 {

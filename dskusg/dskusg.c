@@ -5,8 +5,8 @@
 #include <ctype.h>
 #include <sys/statvfs.h>
 
-#include "types.h"
-#include "shared_stuff.h"
+#include "autlib/types.h"
+#include "autlib/shared_stuff.h"
 
 #define U64_MAX_STR_LEN 20
 #define DEFAULT_PATH "/"

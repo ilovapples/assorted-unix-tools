@@ -3,15 +3,16 @@
 #include <locale.h>
 #include <ctype.h>
 
-#include "types.h"
-#include "shared_stuff.h"
+#include "autlib/types.h"
+#include "autlib/shared_stuff.h"
 
 #define xdig2num(d) (('a'<=d && d<='f') \
 			? d - 'a' + 0xA \
 			: d - '0')
 
-#define WESC_RGB L"\x1b[38;2;"
-#define WESC_END L"\x1b[0m"
+#define ESC_RGB "\x1b[38;2;"
+#define ESC_END "\x1b[0m"
+#define FULL_BLOCK_CHAR "\xe2\x96\x88"
 
 s32 main(s32 argc, char **argv)
 {
@@ -41,8 +42,7 @@ s32 main(s32 argc, char **argv)
 	u8 gv = (xdig2num(to_lower_buf[2]) << 4) + xdig2num(to_lower_buf[3]);
 	u8 bv = (xdig2num(to_lower_buf[4]) << 4) + xdig2num(to_lower_buf[5]);
 	
-	const wchar_t full_block_wchar = L'\x2588';
-	wprintf(WESC_RGB L"%u;%u;%um%lc%4$lc" WESC_END L"\n", rv, gv, bv, full_block_wchar);
+	printf(ESC_RGB "%u;%u;%um" FULL_BLOCK_CHAR FULL_BLOCK_CHAR ESC_END "\n", rv, gv, bv);
 
 	return 0;
 }

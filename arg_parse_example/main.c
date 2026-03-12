@@ -4,8 +4,8 @@
 
 extern size_t ap_options_column_2_offset;
 
-#include "arg_parse.h"
-#include "util.h"
+#include "autlib/arg_parse.h"
+#include "autlib/util.h"
 
 int32_t main(int32_t argc, char **argv) {
       ap_options_column_2_offset = 34;

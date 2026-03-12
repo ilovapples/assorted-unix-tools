@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "shared_stuff.h"
-#include "types.h"
-
 int32_t main(int32_t argc, char **argv)
 {
 	FILE *fp = stdin;

@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#include "types.h"
+#include "autlib/types.h"
 
 s32 main(s32 argc, char **argv)
 {

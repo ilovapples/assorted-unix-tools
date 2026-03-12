@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stddef.h>
 
-#include "bitset.h"
-#include "cvi/dvec/dvec.h"
+#include "autlib/bitset.h"
+#include "autlib/dvec.h"
 
 #ifdef __cplusplus
 #define crestrict

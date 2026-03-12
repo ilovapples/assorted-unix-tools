@@ -1,4 +1,4 @@
-#include "include/aut_lib.h"
+#include "autlib/aut_lib.h"
 
 #include <stdint.h>
 #include <stdlib.h>
