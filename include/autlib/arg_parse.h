@@ -41,12 +41,15 @@ typedef optional(size_t) opt_usize;
 #define _some_(_v) { .is_null = false, .val = (_v) }
 #define some(_oT, _v) ((_oT) _some_(_v))
 
+typedef dvec_t(struct ap_option) ap_option_vec;
+typedef dvec_t(struct ap_option_decl) ap_option_decl_vec;
+
 struct arg_parser {
 	ap_argv_t args;
 	bitset args_used;
 
-	dvec_t(struct ap_option) declared_options;
-	dvec_t(struct ap_option_decl) declared_positional_options;
+	ap_option_vec declared_options;
+	ap_option_decl_vec declared_positional_options;
 
 	opt_usize dashdash_pos;
 	opt_usize dash_pos;

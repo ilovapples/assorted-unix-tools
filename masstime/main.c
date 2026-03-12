@@ -4,15 +4,14 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
+
+#include "autlib/arg_parse.h"
 
 #define freep(p) (free(p), (p)=NULL)
-
-const char *PROGRAM_NAME = NULL;
-char **CMD_START = NULL;
-
-uint64_t count = 10;
 
 void err_print(int32_t err_code, const char *fmt, ...)
 {
@@ -26,69 +25,27 @@ void err_print(int32_t err_code, const char *fmt, ...)
 	exit(err_code);
 }
 
-void print_usage(void)
+void print_usage(const char *program_name)
 {
 	err_print(1,
-			"usage: %s [options] -- <cmd_with_args>\n\n"
+			"usage: %s [-Nh] --cmd <command_to_time>\n\n"
 			
-			"--count=NUM, -CNUM		Execute the given command NUM times (default is 10)\n", PROGRAM_NAME);
+			"options:\n"
+			"  --count [int], -N [int]        Execute the given command NUM times (default is 10)\n"
+			"  --cmd [string], -c [string]    Specify the command to be timed (required)\n"
+			"  --help, -h                     Display this help message\n"
+			, program_name);
 }
 
-void arg_parse(int32_t argc, char **argv)
+char *setup_cmd_str(const char *str_arr)
 {
-	int32_t arg_n = 0;
-	PROGRAM_NAME = argv[arg_n++];
-	for (; arg_n < argc; ++arg_n)
-	{
-		if (strcmp(argv[arg_n], "--") == 0)
-		{
-			if (argv[arg_n] == NULL)
-				err_print(1, "argument error: '--' option must be followed by a command\n");
-			CMD_START = &argv[++arg_n];
-			break;
-		} else if (strncmp(argv[arg_n], "--", 2) == 0)
-		{
-			if (strncmp(argv[arg_n]+2, "count=", 6) == 0)
-				count = strtoul(argv[arg_n]+2+6, NULL, 0);
-			else
-				err_print(1, "argument error: unknown option '%s'\n", argv[arg_n]);
-		} else if (argv[arg_n][0] == '-')
-		{
-			char *c = argv[arg_n]+1;
-			bool terminate_loop = false;
-			while (*c && !terminate_loop)
-			{
-				switch (*c) {
-				case 'C':
-					count = strtoul(c+1, NULL, 0);
-					terminate_loop = true;
-					break;
-				}
-				++c;
-			}
-		}
-	}
-
-	if (CMD_START == NULL)
-		print_usage();
-}
-
-char *flatten_str_arr(char **str_arr)
-{
-	size_t total_len = 0;
-	char **s_p;
-	for (s_p = str_arr; *s_p != NULL; ++s_p)
-		total_len += strlen(*s_p)+1+2; // +1 for a space, +2 for quotes around it 
-	++total_len;
+	const size_t total_len = strlen(str_arr) + sizeof(" 2>&1")-1;
 	
-	char *ret = malloc(sizeof(char) * total_len);
-	for (s_p = str_arr; *s_p != NULL; ++s_p)
-	{
-		strcat(ret, "'");
-		strcat(ret, *s_p);
-		strcat(ret, "'");
-		strcat(ret, " ");
-	}
+	char *ret = malloc(total_len + 1);
+	if (ret == NULL) return NULL;
+
+	strlcpy(ret, str_arr, total_len + 1);
+	strcat(ret, " 2>&1");
 
 	return ret;
 }
@@ -98,7 +55,18 @@ double time_program(char *cmd)
 	struct timespec start, end;
 	clock_gettime(CLOCK_MONOTONIC, &start);
 
-	system(cmd);
+	// will be writable at some point
+	FILE *prog = popen(cmd, "r");
+	if (prog == NULL) {
+		fprintf(stderr, "failed to run command '%s'", cmd);
+		return INFINITY; // error value
+	}
+	// discard output
+	int c;
+	while ((c = fgetc(prog)) != EOF)
+		;
+
+	pclose(prog);
 
 	clock_gettime(CLOCK_MONOTONIC, &end);
 
@@ -107,49 +75,89 @@ double time_program(char *cmd)
 	return ret;
 }
 
-double *times = NULL;
-char *flat_cmd = NULL;
+char *full_cmd = NULL;
 
 void signal_handler(int signum)
 {
-	free(times);
-	free(flat_cmd);
+	free(full_cmd);
 	printf("terminating with signal %d\n", signum);
+	fputs("\x1b[?25h", stdout);
 
 	exit(5);
 }
 
-int32_t main(int32_t argc, char **argv)
+int main(int argc, char **argv)
 {
 	signal(SIGINT, signal_handler);
 	signal(SIGTERM, signal_handler);
 	signal(SIGQUIT, signal_handler);
 
-	arg_parse(argc, argv);
+	struct arg_parser ap = ap_create(argc, argv);
+	const bool help_option = ap_long_short_option(&ap, "help", 'h', NULL, "bool") != NULL;
+	const char *const count_option = ap_long_short_option(&ap, "count", 'N', NULL, "int");
+	const char *const command_option = ap_long_short_option(&ap, "cmd", 'c', NULL, "string");
+	ap_destroy(&ap);
 
-	flat_cmd = flatten_str_arr(CMD_START);
+	if (help_option) print_usage(argv[0]);
+	if (command_option == NULL)
+		err_print(1, "a command to be timed must be passed via the `--cmd` (or `-c`) flag (see `--help` for info)\n");
 
-	printf("executing command \"%s\" %" PRIu64 " times...\n", flat_cmd, count);
-
-	times = calloc(count, sizeof(double));
-
-	for (uint64_t i = 0; i < count; ++i)
-	{
-		times[i] = time_program(flat_cmd);
-		//puts("\033[7m%\033[0m");
-		fputc('\n', stdout);
+	uint64_t n_runs = 10;
+	if (count_option != NULL) {
+		char *end;
+		const uint64_t tmp_n_runs = strtoull(count_option, &end, 10);
+		if (*count_option == '\0' || *end != '\0') {
+			fprintf(stderr, "invalid --count (or -N) argument '%s'; using default value 10", count_option);
+		} else n_runs = tmp_n_runs;
 	}
 
-	double time_avg = 0;
+	int ret_code = 0;
 
-	for (uint64_t i = 0; i < count; ++i)
-		time_avg += times[i];
-	time_avg /= count;
+	full_cmd = setup_cmd_str(command_option);
+	if (full_cmd == NULL) {
+		fprintf(stderr, "failed to allocate full command string, exiting...");
+		ret_code = 1;
+		goto cleanup_0;
+	}
+
+	printf("executing command \"%s\" %" PRIu64 " times...\n", full_cmd, n_runs);
+	const size_t progress_bar_len = 40;
+	fputs("\x1b[?25l[                                        ]", stderr);
+	fflush(stdout);
+	fflush(stderr);
+
+	double sum_of_times = 0.0;
+	for (uint64_t i = 0; i < n_runs; ++i)
+	{
+		const double duration = time_program(full_cmd);
+		if (duration == INFINITY) {
+			ret_code = 2;
+			goto cleanup_0;
+		}
+		sum_of_times += duration;
+
+		
+		fputs("\r[", stderr);
+		const size_t filled_progress_len = (double)(progress_bar_len*i) / n_runs + 1;
+		assert(filled_progress_len <= progress_bar_len);
+		for (size_t p = 0; p < filled_progress_len; ++p) {
+			fputc('=', stderr);
+		}
+		for (size_t p = 0; p < (progress_bar_len - filled_progress_len); ++p) {
+			fputc(' ', stderr);
+		}
+		fprintf(stderr, "] %" PRIu64 "/%" PRIu64, i, n_runs);
+		fflush(stderr);
+	}
+	fputs("\x1b[2K\r", stderr);
+
+	const double time_avg = sum_of_times / n_runs;
 
 	printf("average time: %.10g seconds\n", time_avg);
 
-	freep(times);
-	freep(flat_cmd);
+cleanup_0:
+	freep(full_cmd);
+	fputs("\x1b[?25h", stderr);
 
-	return 0;
+	return ret_code;
 }

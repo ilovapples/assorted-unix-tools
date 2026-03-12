@@ -35,11 +35,11 @@ static bool ap_argument_is_option(const char *arg)
 	return arg[0] == '-';
 }
 
-// declare a long-form option in the `arg_parser` ap
+// declare and parse long-form option in the `arg_parser` ap.
 //
-// only supports '--field value' or '--bool-field' syntax
+// supports '--field value' and '--bool-field' syntax
 //
-// if 'type_str' is "bool", returns "" if option is passed, NULL if not
+// if 'type_str' is "bool", returns "" if option is passed, NULL if not.
 // otherwise, returns the next argument in the list if possible, NULL if not possible,
 // or the option wasn't passed in the first place.
 const char *ap_long_option(
@@ -48,8 +48,8 @@ const char *ap_long_option(
 		const char *desc,
 		const char *type_str)
 {
-	// copy made so we aren't doing a millionpointer dereferences of ap->specified_options
-	__auto_type declared_options_copy = ap->declared_options;
+	// copy made so we aren't doing a million pointer dereferences of ap->specified_options
+	ap_option_vec declared_options_copy = ap->declared_options;
 	const bool type_is_bool = strcmp(type_str, "bool") == 0;
 	dv_push(declared_options_copy, ((struct ap_option) {
 			.short_name = '\0',
@@ -107,9 +107,9 @@ const char *ap_short_option(
 		const char *type_str)
 {
 	const bool type_is_bool = strcmp(type_str, "bool") == 0;
+	ap_option_vec declared_options_copy = ap->declared_options;
 	// associated_long_name and desc null-ness is mutually exclusive,
 	// but description is checked first, so it won't necessarily be an issue
-	__auto_type declared_options_copy = ap->declared_options;
 	if (desc == NULL) {
 		struct ap_option *item;
 		dv_foreach(declared_options_copy, item)
@@ -134,7 +134,7 @@ const char *ap_short_option(
 	ap->err = ap_err__option_not_present;
 
 	const ap_argv_t args = ap->args;
-	for (size_t i = 1; i < args.argc; ++i)
+	for (int i = 1; i < args.argc; ++i)
 	{
 		if (bitset_is_set_at(ap->args_used, i)) continue;
 		char *cur_arg = args.argv[i];
@@ -192,7 +192,7 @@ const char *ap_positional_option(
 		const char *name,
 		const char *desc,
 		const char *type_str) {
-	__auto_type decld_pos_options_copy = ap->declared_positional_options;
+	ap_option_decl_vec decld_pos_options_copy = ap->declared_positional_options;
 	const bool type_is_bool = strcmp(type_str, "bool") == 0;
 	dv_push(decld_pos_options_copy, ((struct ap_option_decl) {
 		.type_str = (type_is_bool) ? NULL : type_str,

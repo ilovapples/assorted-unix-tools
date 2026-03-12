@@ -64,8 +64,10 @@ int main(int argc, char *argv[argc])
             goto cleanup1;
         }
 ;
-        if ((stbuf.st_mode & S_IEXEC) == S_IEXEC)
+        if ((stbuf.st_mode & S_IEXEC) == S_IEXEC) {
+            fputs("  ", stdout);
             puts(dp->d_name);
+        }
     }
 
 cleanup1:

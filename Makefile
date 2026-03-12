@@ -69,18 +69,21 @@ install_include: $(INCLUDE_INSTALLDIR)
 	
 	
 install: $(TOOL_BINDIR) $(LIB_INSTALLDIR)/$(AUT_LIB_A) $(APPLE_AUT_TOOL_BIN) $(INSTALL_EXES) install_include
+	rm $(TOOL_BINDIR)/apple-aut
 
 # OTHER RULES
 .PHONY: clean clean_installed clean_libs clean_installed_include clean_all
 clean_objs:
 	rm -f $(filter-out lib/%,$(wildcard */*.o)) build/*
-clean_installed:
+clean_installed: clean_installed_include clean_installed_libs
 	rm -f $(INSTALL_EXES) $(APPLE_AUT_TOOL_BIN)
 	rm -rf $(TOOL_BINDIR)
-clean_libs: $(LIB)
-	rm -f $(LIB)/*.o $(LIB)/$(AUT_LIB_A) $(LIB_INSTALLDIR)/$(AUT_LIB_A)
+clean_libs: $(LIB) clean_installed_libs
+	rm -f $(LIB)/*.o $(LIB)/$(AUT_LIB_A)
 clean_installed_include:
 	rm -rf $(INCLUDE_INSTALLDIR)
+clean_installed_libs:
+	rm -f $(LIB_INSTALLDIR)/$(AUT_LIB_A)
 clean_all: clean_objs clean_installed clean_libs clean_installed_include
 	git submodule deinit --all -f
 	rm -f build/SUBMODULES_INITED
