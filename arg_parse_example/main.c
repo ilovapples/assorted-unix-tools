@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-size_t ap_options_column_2_offset;
+extern size_t ap_options_column_2_offset;
 
 #include "arg_parse.h"
 #include "util.h"
