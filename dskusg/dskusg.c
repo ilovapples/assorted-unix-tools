@@ -41,7 +41,7 @@ void print_usage_msg(void)
 		 "  { -r<ROW_NUM> |\n"
 		 "    -r <ROW_NUM> |\n"
 		 "    --raw=<ROW_NUM> |\n"
-		 "    --row=<ROW_NUM> }                    display *only* the value for row 1, 2, or 3 (ROW_NUM) (in the order they appear without this option)\n"
+		 "    --row=<ROW_NUM> }                    display *only* the value for row 1, 2, 3, or 4 (ROW_NUM) (in the order they appear without this option)\n"
 		 "  -T, --tebibytes                        allow values to be displayed in TiB (tebibyte) units (only with -h)\n"
 		 "  -U, --unit                             only display the unit of the selected row (only with -r and -h, mutually exclusive with -u)\n"
 		 "  -u, --no-unit                          don't display the unit of the selected row (only with -r and -h, mutually exclusive with -U)\n"
