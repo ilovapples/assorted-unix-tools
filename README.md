@@ -19,3 +19,10 @@ tools.
 To pass extra flags along to compile commands, add `EXTRA_CFLAGS={your cflags}`
 and/or `EXTRA_LDFLAGS={your ldflags}` for compiler and linker flags,
 respectively, to your `make` command.
+
+
+---
+
+If it fails to build with a linker error about an 'expand_bindir_path' symbol, try
+using `CC=` to set a different C compiler. This happens for me on x86_64 Linux, and
+using `CC=zig cc` fixed it for me, so you can try that if you have Zig installed.
