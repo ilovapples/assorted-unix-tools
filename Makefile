@@ -40,8 +40,7 @@ $(OBJS): %.o: %.c $$(wildcard $$(dir $$@)/*.h) Makefile | build/SUBMODULES_INITE
 # depends on all respective object files and the lib/*.o object files
 .SECONDEXPANSION:
 $(EXES): $$(patsubst %.c,%.o,$$(wildcard $$(notdir $$@)/*.c)) $$(LIB)/$$(AUT_LIB_A) | build/SUBMODULES_INITED
-	$(CC) $(LDFLAGS) -o $@ $<
-#
+	$(CC) -o $@ $< $(LDFLAGS)
 
 # INSTALL RULE
 INSTALL_PREFIX := $(HOME)/.local

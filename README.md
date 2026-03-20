@@ -23,6 +23,7 @@ respectively, to your `make` command.
 
 ---
 
-If it fails to build with a linker error about an 'expand_bindir_path' symbol, try
+~~If it fails to build with a linker error about an 'expand_bindir_path' symbol, try
 using `CC=` to set a different C compiler. This happens for me on x86_64 Linux, and
-using `CC=zig cc` fixed it for me, so you can try that if you have Zig installed.
+using `CC=zig cc` fixed it for me, so you can try that if you have Zig installed.~~
+This should be fixed; please open an issue on Github if you still have problems.

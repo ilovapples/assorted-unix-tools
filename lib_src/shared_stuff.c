@@ -25,7 +25,7 @@ memblck read_string_from_stream(FILE *stream)
 		return (memblck) { NULL, 0 };
 
 	size_t n_read;
-	while ((n_read = fread(ret.m + ret.l, 1, buf_size - ret.l - 1, stream)) > 0)
+	while ((n_read = fread((u8 *)ret.m + ret.l, 1, buf_size - ret.l - 1, stream)) > 0)
 	{
 		ret.l += n_read;
 		if (ret.l >= buf_size - 1)

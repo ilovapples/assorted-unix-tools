@@ -122,9 +122,11 @@ void arg_parse(s32 argc, char **argv)
 							break;
 						}
 						print_usage_msg();
+						break;
 					default:
 						error(-5280, "%s: argument error: unknown option \"-%c\"\n", argv[0], *cur_char);
 						print_usage_msg();
+						break;
 					}
 				}
 			}
