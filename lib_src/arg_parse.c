@@ -201,19 +201,20 @@ const char *ap_positional_option(
 	}));
 	ap->declared_positional_options = decld_pos_options_copy;
 
-	const size_t cur_pos_idx = dv_n(decld_pos_options_copy);
+	//const size_t cur_pos_idx = dv_n(decld_pos_options_copy);
 
 	ap->err = ap_err__option_not_present;
 	const ap_argv_t args = ap->args;
-	for (size_t i = 1, pos_arg_n = 0; i < (size_t)args.argc; ++i) {
+	for (size_t i = 1; i < (size_t)args.argc; ++i) {
 		if (ap_argument_is_option(args.argv[i])) continue;
-		++pos_arg_n;
+		// increments on any used argument that isn't prefixed by a `-`
+		// ++pos_arg_n;
 		if (bitset_is_set_at(ap->args_used, i)) continue;
 
-		if (pos_arg_n == cur_pos_idx) {
-			bitset_set_at(ap->args_used, i);
-			return args.argv[i];
-		}
+		//if (pos_arg_n == cur_pos_idx) {
+		bitset_set_at(ap->args_used, i);
+		return args.argv[i];
+		// }
 	}
 
 	return NULL;
