@@ -63,9 +63,9 @@ int main(int argc, char *argv[argc])
             exit_code = 3;
             goto cleanup1;
         }
-;
-        if ((stbuf.st_mode & S_IEXEC) == S_IEXEC) {
-            fputs("  ", stdout);
+
+        if ((stbuf.st_mode & S_IXUSR) == S_IXUSR) {
+            fputs("  ", stderr);
             puts(dp->d_name);
         }
     }

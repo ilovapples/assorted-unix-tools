@@ -1,27 +1,27 @@
-#include <ctype.h>
 #include <stdarg.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <ctype.h>
+#include <stdio.h>
 
-// config file spec:
+// Config File Spec:
 //
 // ```
 // option_name = 'value'
 // ```
 //
-// the delimiter (single quote in this case) is whatever is the first
-// non-whitespace character after the '='.
+// Formatting requirements:
+//  * the delimiter (a single quote char in this case) is the first
+//    non-whitespace character after the '='.
+//  * values are read raw from start to end delimiter (same character).
+//  * nothing is read after the ending delimiter
+//  * whitespace around '=' is ignored.
+//  * no option other than the one being searched for will be checked.
+//  * the "option_name = " part must be the start of the line it's on
+//    (immediately preceded by a newline ('\n') character).
 //
-// values are read raw from start to end delimiter.
-//
-// whitespace around '=' does not matter.
-//
-// no option other than the one being searched for will be checked.
-//
-// the 'option_name = ' part must be the start of the line it's on.
+// There are no other restrictions/requirements on formatting.
 
 #define PROGRAM_NAME "config_reader"
 #define LINE_BUFFER_SIZE 8192
@@ -32,8 +32,8 @@ void debug_print(const char *fmt, ...) __attribute__((format(printf, 1, 2)));
 const char *const USAGE_MSG =
 "usage: %1$s <config_file> <option_name>\n"
 "       %1$s <option_name>\n"
-"prints to stdout the value of 'option_name' found in 'config_file'\n"
-"(defaults to './config.txt' if unspecified)\n";
+"prints to stdout the value of `option_name` found in `config_file`\n"
+"(`config_file` defaults to './config.txt' if unspecified)\n";
 
 FILE *fp;
 

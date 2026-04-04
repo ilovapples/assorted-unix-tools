@@ -1,9 +1,12 @@
+#include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
 
 #define MAX_LINE_LEN 32767
+#define STR_(_0) #_0
+#define STR(_0) STR_(_0)
 
 int32_t main(int32_t argc, char **argv)
 {
@@ -19,18 +22,22 @@ int32_t main(int32_t argc, char **argv)
 		return 3;
 	}
 
-	char first_line[MAX_LINE_LEN+1];
-	fgets(first_line, MAX_LINE_LEN, fp);
-
-	size_t line_len = strlen(first_line);
-
 	uint8_t exit_code;
-	if (first_line[line_len-2] == '\r') {
+
+	char first_line[MAX_LINE_LEN+1];
+	if (!fgets(first_line, MAX_LINE_LEN, fp)) {
+		first_line[0] = '\0';
+	}
+
+	char *const line_end = strchr(first_line, '\0');
+	assert(line_end != NULL);
+
+	if (line_end > first_line+1 && line_end[-2] == '\r') {
 		printf("dos");
 		exit_code = 0;
-	} else if (first_line[line_len-1] != '\n') {
-		fprintf(stderr, "%s: first line is longer than %d single-width characters\n",
-				argv[0], MAX_LINE_LEN);
+	} else if (line_end == first_line || line_end[-1] != '\n') {
+		fprintf(stderr, "%s: input does not contain a newline within the first " STR(MAX_LINE_LEN) " chars\n",
+				argv[0]);
 		exit_code = 4;
 	} else {
 		printf("unix");
