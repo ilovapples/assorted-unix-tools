@@ -1,3 +1,19 @@
+## tool layout
+No particular tool layout for C tools. For any C tool, all C files in a
+directory are separately compiled into object files and then linked together
+in the `build` directory.
+
+For Zig tools, a file named `ZIG` must be present to indicate that it is a Zig
+tool. If no `build.zig` is present, the root source file must be `main.zig`. If
+a `build.zig` is present, it must configure its outputted executable to output
+directly in the prefix directory, maybe with
+```zig
+b.getInstallStep().dependOn(&b.addInstallArtifact(
+    exe,
+    .{ .dest_dir = .{ .override = .{ .prefix = {} } } },
+).step);
+```
+
 ## build
 You can build with `make` to build every tool. This project setup lends
 itself well to parallel compilation, so `-j` is recommended. `make install`

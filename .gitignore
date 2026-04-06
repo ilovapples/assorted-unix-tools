@@ -2,4 +2,7 @@
 build/*
 lib/*.a
 .cache/
+.zig-cache/
+zig-out/
+*/.zig-cache/
 compile_commands.json

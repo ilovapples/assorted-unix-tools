@@ -5,7 +5,12 @@ BUILD := build
 
 AUT_LIB := autlib
 AUT_LIB_A := lib$(AUT_LIB).a
-CFLAGS := -Wall -Wextra -Wpedantic -D_POSIX_C_SOURCE=200809L -D_ISO2X_SOURCE=1 -D_DEFAULT_SOURCE -I$(INCLUDE) $(EXTRA_CFLAGS)
+
+UNAME_S := $(shell uname -s)
+CFLAGS := -D_ISO2X_SOURCE=1 -D_DEFAULT_SOURCE -Wall -Wextra -Wpedantic -I$(INCLUDE) $(EXTRA_CFLAGS)
+ifeq ($(UNAME_S),Linux)
+	CFLAGS := -D_POSIX_C_SOURCE=200809L $(CFLAGS)
+endif
 LDFLAGS := $(EXTRA_LDFLAGS) -L$(LIB) -l$(AUT_LIB)
 CC := cc
 AR := ar
