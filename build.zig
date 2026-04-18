@@ -1,5 +1,5 @@
 const std = @import("std");
-const fs = std.fs;
+const Io = std.Io;
 
 const ZigToolDir = struct {
     path: []u8,
@@ -7,6 +7,10 @@ const ZigToolDir = struct {
 };
 
 pub fn build(b: *std.Build) !void {
+    var threaded_io: Io.Threaded = .init_single_threaded;
+    defer threaded_io.deinit();
+    const io = threaded_io.io();
+
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
     const target_user_input_option = b.user_input_options.get("target");
@@ -14,8 +18,8 @@ pub fn build(b: *std.Build) !void {
 
     const build_all_step = b.step("build-all", "build all zig tools");
 
-    var cwd = try std.fs.cwd().openDir(".", .{ .iterate = true });
-    defer cwd.close();
+    var cwd = try Io.Dir.cwd().openDir(io, ".", .{ .iterate = true });
+    defer cwd.close(io);
 
     var it = cwd.iterate();
 
@@ -23,17 +27,17 @@ pub fn build(b: *std.Build) !void {
     defer zig_tool_dirs.deinit(b.allocator);
     defer for (zig_tool_dirs.items) |*tool| b.allocator.free(tool.path);
 
-    while (try it.next()) |entry| {
+    while (try it.next(io)) |entry| {
         if (entry.kind != .directory) continue;
 
-        var dir = cwd.openDir(entry.name, .{}) catch continue;
-        defer dir.close();
+        var dir = cwd.openDir(io, entry.name, .{}) catch continue;
+        defer dir.close(io);
 
-        dir.access("ZIG", .{}) catch continue;
+        dir.access(io, "ZIG", .{}) catch continue;
         // dir contains a zig tool if that didn't error
 
         var has_build_script = true;
-        dir.access("build.zig", .{}) catch {
+        dir.access(io, "build.zig", .{}) catch {
             has_build_script = false;
         };
 
@@ -43,12 +47,12 @@ pub fn build(b: *std.Build) !void {
         });
     }
 
-    const absolute_build_dir = if (fs.path.isAbsolute(b.install_prefix))
+    const absolute_build_dir = if (Io.Dir.path.isAbsolute(b.install_prefix))
         b.install_prefix
     else
-        try std.fmt.allocPrint(b.allocator, "{s}/{s}", .{
-            try cwd.realpathAlloc(b.allocator, "."),
-            try fs.path.resolve(b.allocator, &[_][]const u8{b.install_prefix}),
+        b.fmt("{s}/{s}", .{
+            try cwd.realPathFileAlloc(io, ".", b.allocator),
+            try Io.Dir.path.resolve(b.allocator, &[_][]const u8{b.install_prefix}),
         });
 
     for (zig_tool_dirs.items) |tool_dir| {
@@ -71,7 +75,7 @@ pub fn build(b: *std.Build) !void {
                 optimize_arg,
             });
             run_cmd.setCwd(b.path(tool_dir.path));
-            run_cmd.addCheck(.{ .expect_term = .{ .Exited = 0 } });
+            run_cmd.addCheck(.{ .expect_term = .{ .exited = 0 } });
             run_cmd.has_side_effects = true;
 
             build_all_step.dependOn(&run_cmd.step);

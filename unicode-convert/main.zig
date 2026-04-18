@@ -184,20 +184,15 @@ pub const Codepoint = struct {
     pub const replacement_character: Codepoint = .{ .code = 0xFFFD };
 };
 
-pub fn main() !void {
-    var gpa: std.heap.GeneralPurposeAllocator(.{}) = .init;
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
-
-    const args = try std.process.argsAlloc(allocator);
-    defer std.process.argsFree(allocator, args);
+pub fn main(init: std.process.Init) !void {
+    const args = try init.minimal.args.toSlice(init.arena.allocator());
 
     var write_buffer: [512]u8 = undefined;
-    var stdout_writer = std.fs.File.stdout().writer(&write_buffer);
+    var stdout_writer = Io.File.stdout().writer(init.io, &write_buffer);
     const stdout = &stdout_writer.interface;
 
     var read_buffer: [512]u8 = undefined;
-    var stdin_reader = std.fs.File.stdin().reader(&read_buffer);
+    var stdin_reader = Io.File.stdin().reader(init.io, &read_buffer);
     const stdin = &stdin_reader.interface;
 
     var from_encoding: Codepoint.Encoding = .utf8;
